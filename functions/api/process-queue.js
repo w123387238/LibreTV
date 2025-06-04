@@ -1,4 +1,4 @@
-export async function onRequestGet({ env }) {
+export async function onRequestGet(context) {
     try {
       // console.log('Request received');
       // // 获取所有消息
@@ -30,7 +30,7 @@ export async function onRequestGet({ env }) {
       // for (const [email, messageList] of Object.entries(grouped)) {
       //   await sendAggregatedEmail(email, messageList, env);
       // }
-      const isExpired = await env.MAIL_QUEUE.get("recentTime") === null;
+      const isExpired = await context.env.MAIL_QUEUE.get("recentTime") === null;
       if (isExpired) {
         const rsp = await sendAggregatedEmail(`服务器无活动`);
         if(rsp){
@@ -48,12 +48,11 @@ export async function onRequestGet({ env }) {
   async function sendAggregatedEmail(messages) {
     const sendgridUrl = 'https://oapi.dingtalk.com/robot/send?access_token=8a0d823ff4225a46dc374f01520ac6f71bc94ced5fea0dc2ca21f4c96a8db32a';
     
-    
     const response = await fetch(sendgridUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.SENDGRID_API_KEY}`
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         msgtype: "text",
@@ -62,5 +61,7 @@ export async function onRequestGet({ env }) {
         }
       })
     });
-    
+    if (!response.ok) {
+      return new Response(`Error: ${response.statusText}`, { status: 500 });
+    }
   }
