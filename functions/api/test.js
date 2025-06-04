@@ -1,6 +1,7 @@
 export async function onRequestGet({ env }) {
     try {
-        return new Response(JSON.stringify({ status: 'queued'}), {
+        return new Response(JSON.stringify({ asd: 'queued'}), {
+            status: 200,
             headers: { 'Content-Type': 'application/json' }
           });
     } catch (error) {

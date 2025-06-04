@@ -15,6 +15,7 @@ export async function onRequestGet({ env }) {
       // }
       
       // if (messages.length === 0) {
+      // https://oapi.dingtalk.com/robot/send?access_token=8a0d823ff4225a46dc374f01520ac6f71bc94ced5fea0dc2ca21f4c96a8db32a
       //   return new Response('No messages to process', { status: 200 });
       // }
       
@@ -29,6 +30,11 @@ export async function onRequestGet({ env }) {
       // for (const [email, messageList] of Object.entries(grouped)) {
       //   await sendAggregatedEmail(email, messageList, env);
       // }
+      const isExpired = await env.MAIL_QUEUE.get("recentTime") === null;
+      if (isExpired) {
+        sendAggregatedEmail(`服务器无活动`);
+      }
+
       return new Response(`messages`, { status: 200 });
       // return new Response(`Processed ${messages.length} messages`, { status: 200 });
     } catch (error) {
@@ -36,15 +42,9 @@ export async function onRequestGet({ env }) {
     }
   }
   
-  async function sendAggregatedEmail(to, messages, env) {
-    const sendgridUrl = 'https://api.sendgrid.com/v3/mail/send';
+  async function sendAggregatedEmail(messages) {
+    const sendgridUrl = 'https://oapi.dingtalk.com/robot/send?access_token=8a0d823ff4225a46dc374f01520ac6f71bc94ced5fea0dc2ca21f4c96a8db32a';
     
-    const emailContent = `
-      <h1>您有 ${messages.length} 条新消息</h1>
-      <ul>
-        ${messages.map(msg => `<li>${msg}</li>`).join('')}
-      </ul>
-    `;
     
     const response = await fetch(sendgridUrl, {
       method: 'POST',
@@ -53,12 +53,11 @@ export async function onRequestGet({ env }) {
         'Authorization': `Bearer ${env.SENDGRID_API_KEY}`
       },
       body: JSON.stringify({
-        personalizations: [{ to: [{ email: to }] }],
-        from: { email: 'noreply@example.com' },
-        subject: `聚合消息 (${messages.length}条)`,
-        content: [{ type: 'text/html', value: emailContent }]
+        msgtype: "text",
+        text: {
+          content: messages
+        }
       })
     });
     
-    if (!response.ok) throw new Error(await response.text());
   }
