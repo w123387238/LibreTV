@@ -32,7 +32,10 @@ export async function onRequestGet({ env }) {
       // }
       const isExpired = await env.MAIL_QUEUE.get("recentTime") === null;
       if (isExpired) {
-        sendAggregatedEmail(`服务器无活动`);
+        const rsp = await sendAggregatedEmail(`服务器无活动`);
+        if(rsp){
+          return rsp;
+        }
       }
 
       return new Response(`messages`, { status: 200 });

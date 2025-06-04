@@ -14,7 +14,10 @@ export async function onRequestPost({ request, env }) {
       const missingServices = requiredServices.filter(service => !data.data.services.includes(service));
       if (data.data.services.length !== 11 || missingServices.length > 0) {
         let msg = `Missing required services: ${missingServices.join(', ')}`;
-        sendAggregatedEmail(msg);
+        const rsp = await sendAggregatedEmail(msg);
+        if(rsp){
+          return rsp;
+        }
         return new Response(msg, { status: 200 ,headers: { 'Content-Type': 'application/json' }});
       }
       
@@ -36,6 +39,7 @@ export async function onRequestPost({ request, env }) {
     const response = await fetch(sendgridUrl, {
       method: 'POST',
       headers: {
+        'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -45,5 +49,7 @@ export async function onRequestPost({ request, env }) {
         }
       })
     });
-    
+    if (!response.ok) {
+      return new Response(`Error: ${response.statusText}`, { status: 500 });
+    }
   }
