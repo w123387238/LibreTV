@@ -9,7 +9,7 @@ export async function onRequestPost({ request, env }) {
       const timestamp = Date.now();
       await env.MAIL_QUEUE.put("recentTime", JSON.stringify({
         timestamp
-      }), { expirationTtl: 300 }); // 5分钟过期
+      }), { expirationTtl: 600 }); // 5分钟过期
       const requiredServices = ["hl-notify","hl-nshop","hl-batch","hl-sfac","hl-task","hl-ssp","hl-channel","hl-account","hl-gate","hl-web","hl-trans"];
       const missingServices = requiredServices.filter(service => !data.data.services.includes(service));
       if (data.data.services.length !== 11 || missingServices.length > 0) {
