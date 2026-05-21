@@ -13,7 +13,7 @@ export async function onRequestPost({ request, env }) {
         //["hl-notify","hl-nshop","hl-batch","hl-sfac","hl-task","hl-ssp","hl-channel","hl-account","hl-gate","hl-web","hl-trans"]
       const requiredServices = ["hl-nshop","hl-batch","hl-sfac","hl-task","hl-ssp","hl-channel","hl-account","hl-gate"];
       const missingServices = requiredServices.filter(service => !data.data.services.includes(service));
-      if (data.data.services.length !== 11 || missingServices.length > 0) {
+      if (missingServices.length > 0) {
         let msg = `Missing required services: ${missingServices.join(', ')}`;
         const rsp = await sendAggregatedEmail(msg);
         if(rsp){
