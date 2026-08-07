@@ -48,20 +48,20 @@ export async function onRequestGet(context) {
   async function sendAggregatedEmail(messages) {
     const sendgridUrl = 'https://oapi.dingtalk.com/robot/send?access_token=8a0d823ff4225a46dc374f01520ac6f71bc94ced5fea0dc2ca21f4c96a8db32a';
     
-    const response = await fetch(sendgridUrl, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        msgtype: "text",
-        text: {
-          content: messages
-        }
-      })
-    });
-    if (!response.ok) {
-      return new Response(`Error: ${response.statusText}`, { status: 500 });
-    }
+    // const response = await fetch(sendgridUrl, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     msgtype: "text",
+    //     text: {
+    //       content: messages
+    //     }
+    //   })
+    // });
+    // if (!response.ok) {
+    //   return new Response(`Error: ${response.statusText}`, { status: 500 });
+    // }
   }
